@@ -10,7 +10,7 @@ import androidx.room.Query
 @Dao
 abstract class MoviesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertMovie(movie: DbMovie)
+    abstract suspend fun insertFavouriteMovie(movie: DbMovie)
 
     @Query("SELECT * FROM  DbMovie")
     abstract suspend fun getAllFavorites(): List<DbMovie>

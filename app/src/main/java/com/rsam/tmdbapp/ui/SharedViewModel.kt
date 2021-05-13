@@ -68,7 +68,7 @@ class SharedViewModel @Inject constructor(
 
     fun saveToFavorites(favoriteMovie: Movie) {
         viewModelScope.launch {
-            dao.insertMovie(favoriteMovie.toDbMovie())
+            dao.insertFavouriteMovie(favoriteMovie.toDbMovie())
         }
     }
 }
