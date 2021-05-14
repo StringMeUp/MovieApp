@@ -66,7 +66,7 @@
             android:gravity="start"
             android:text="@{viewmodel.singleMovie.overview}"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/synopsis_label_text_view"
             app:layout_constraintTop_toBottomOf="@+id/synopsis_label_text_view"

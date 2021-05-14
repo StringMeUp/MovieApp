@@ -7,7 +7,7 @@
     <application
         android:name="com.rsam.tmdbapp.di.BaseApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/tmbd_icon"
         android:label="@string/app_name_label"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
