@@ -7,17 +7,25 @@ import com.rsam.tmdbapp.util.Alert
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MovieDetailsFragment : BaseFragment<SharedViewModel, FragmentMovieDetailsBinding>() {
+class MovieDetailsFragment : BaseFragment<SharedViewModel, FragmentMovieDetailsBinding>(FragmentMovieDetailsBinding::inflate) {
     override var useSharedViewModel: Boolean = true
-    override fun getViewModelClass(): Class<SharedViewModel> = SharedViewModel::class.java
-    override fun getDataBinding(): Class<FragmentMovieDetailsBinding> {
-        return FragmentMovieDetailsBinding::class.java
+
+    override fun provideViewmodel(): Class<SharedViewModel> = SharedViewModel::class.java
+    override fun inflateBinding(): Class<FragmentMovieDetailsBinding>
+    { return FragmentMovieDetailsBinding::class.java }
+
+    override fun setContent(): Int = R.layout.fragment_movie_details
+
+    override fun setUpView() {
+        super.setUpView()
     }
 
-    override fun getContentView(): Int = R.layout.fragment_movie_details
+    override fun setUpViewBinding() {
+        super.setUpViewBinding()
+    }
 
-    override fun observeData() {
-        super.observeData()
+    override fun setUpViewModelBinding() {
+        super.setUpViewModelBinding()
         viewModel.error.observe(viewLifecycleOwner, { error ->
             error?.let {
                 Alert.displayErrorDialog(it, requireContext())

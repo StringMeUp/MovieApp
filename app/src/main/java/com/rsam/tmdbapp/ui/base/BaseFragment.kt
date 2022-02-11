@@ -11,67 +11,92 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.rsam.tmdbapp.BR
 
+typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
+
 abstract class BaseFragment<
         ViewModel : BaseViewModel,
-        DataBinding : ViewDataBinding> : Fragment() {
+        VDBinding : ViewDataBinding>(private val inflate: Inflate<VDBinding>) : Fragment() {
+
+    /**If VM needs to be shared set to true.*/
     open var useSharedViewModel: Boolean = false
 
-    protected lateinit var viewModel: ViewModel
+    /**Tru using mostly VB as it isn't as heavy as DB.*/
+    open var usesViewBinding: Boolean = false
 
-    protected lateinit var binding: DataBinding
+    open fun setUpView() {}
+    open fun setUpViewBinding() {}
+    open fun setUpViewModelBinding() {}
+
+    private var _viewModel: ViewModel? = null
+    protected val viewModel
+        get() = _viewModel!!
+
+    private var _binding: VDBinding? = null
+    protected val binding
+        get() = _binding!!
+
+    private var _viewbinding: VDBinding? = null
+    protected val viewBinding
+        get() = _viewbinding!!
 
     @NonNull
-    protected abstract fun getViewModelClass(): Class<ViewModel>
+    protected abstract fun provideViewmodel(): Class<ViewModel>
 
     @NonNull
-    protected abstract fun getDataBinding(): Class<DataBinding>
+    protected abstract fun inflateBinding(): Class<VDBinding>
 
     @NonNull
-    protected abstract fun getContentView(): Int
+    protected abstract fun setContent(): Int
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        //databinding
         init(inflater, container)
         setLifecycle(binding, viewModel)
-        return binding.root
+
+        //viewbinding
+        _viewbinding = inflate.invoke(inflater, container, false)
+
+        return if (usesViewBinding) viewBinding.root else binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpViews()
-        observeData()
+        setUpView()
+        setUpViewBinding()
+        setUpViewModelBinding()
     }
-
-    open fun setUpViews() {}
-    open fun observeData() {}
 
     private fun init(
         inflater: LayoutInflater,
         container: ViewGroup?
     ) {
-        binding = DataBindingUtil.inflate(
+        _binding = DataBindingUtil.inflate(
             inflater,
-            getContentView(),
+            setContent(),
             container,
             false
         )
-        viewModel = if (useSharedViewModel) {
-            ViewModelProvider(requireActivity()).get(getViewModelClass())
-        } else {
-            ViewModelProvider(this).get(getViewModelClass())
-        }
+        _viewModel =
+            if (useSharedViewModel) ViewModelProvider(requireActivity())[provideViewmodel()]
+            else ViewModelProvider(this)[provideViewmodel()]
     }
 
     private fun setLifecycle(
-        binding: DataBinding,
+        binding: VDBinding,
         viewModel: ViewModel
     ) {
         binding.run {
             setVariable(BR.viewmodel, viewModel)
             lifecycleOwner = viewLifecycleOwner
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

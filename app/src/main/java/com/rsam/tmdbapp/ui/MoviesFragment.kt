@@ -14,7 +14,7 @@ import com.rsam.tmdbapp.util.Alert
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MoviesFragment : BaseFragment<SharedViewModel, FragmentMoviesBinding>(),
+class MoviesFragment : BaseFragment<SharedViewModel, FragmentMoviesBinding>(FragmentMoviesBinding::inflate),
     OnCardClickListener,
     OnButtonClickListener {
 
@@ -24,9 +24,9 @@ class MoviesFragment : BaseFragment<SharedViewModel, FragmentMoviesBinding>(),
     )
 
     override var useSharedViewModel: Boolean = true
-    override fun getViewModelClass(): Class<SharedViewModel> = SharedViewModel::class.java
-    override fun getDataBinding(): Class<FragmentMoviesBinding> = FragmentMoviesBinding::class.java
-    override fun getContentView(): Int = R.layout.fragment_movies
+    override fun provideViewmodel(): Class<SharedViewModel> = SharedViewModel::class.java
+    override fun inflateBinding(): Class<FragmentMoviesBinding> = FragmentMoviesBinding::class.java
+    override fun setContent(): Int = R.layout.fragment_movies
     override fun onCardClicked(movieId: Int) {
         viewModel.getDetailsInfo(movieId)
     }
@@ -40,8 +40,8 @@ class MoviesFragment : BaseFragment<SharedViewModel, FragmentMoviesBinding>(),
         ).show()
     }
 
-    override fun setUpViews() {
-        super.setUpViews()
+    override fun setUpView() {
+        super.setUpView()
         viewModel.fetchMovieData()
         binding.testRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -49,8 +49,8 @@ class MoviesFragment : BaseFragment<SharedViewModel, FragmentMoviesBinding>(),
         }
     }
 
-    override fun observeData() {
-        super.observeData()
+    override fun setUpViewModelBinding() {
+        super.setUpViewModelBinding()
         viewModel.moviesList.observe(viewLifecycleOwner, { article ->
             article?.let {
                 newsAdapter.moviesList = it
